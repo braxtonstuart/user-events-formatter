@@ -22,7 +22,6 @@
   },
   "devDependencies": {
     "@braxtonstuart/btncache-clients": "^1.0.0",
-    "@braxtonstuart/btncache-mappings": "^1.0.0",
     "@braxtonstuart/btncache-types": "^1.0.0",
     "@types/node": "^18.x",
     "azure-functions-core-tools": "^4.0.5611",

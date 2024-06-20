@@ -3,10 +3,8 @@ import {AzureEventHubClient} from "@braxtonstuart/btncache-clients";
 import {UserEvent, UserEventType} from "@braxtonstuart/btncache-types";
 import {app, InvocationContext} from "@azure/functions";
 
-const eventHubClient = new AzureEventHubClient();
-
 export async function userEventFormatter(message: string, context: InvocationContext): Promise<void> {
-    const userEventsProducerClient = eventHubClient.getProducer('USER_EVENTS');
+    const userEventsProducerClient = new AzureEventHubClient().getProducer('USER_EVENTS');
 
     try {
         context.debug(`Received Raw User Event Message:\n${message}`);
@@ -21,8 +19,11 @@ export async function userEventFormatter(message: string, context: InvocationCon
         context.info(`SUCCESS - Formatted User Event Message Forwarded\n${JSON.stringify(userEvent.body, null, 2)}`);
     } catch (error) {
         context.error(`FAILURE - Formatting or Enqueueing User Event Message\nMessage: ${message}`, error);
-        await userEventsProducerClient.close();
         throw error;
+    }
+    finally {
+        await userEventsProducerClient.close();
+
     }
 }
 
