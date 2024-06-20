@@ -4,17 +4,17 @@ import {UserEvent, UserEventType} from "@braxtonstuart/btncache-types";
 import {app, InvocationContext} from "@azure/functions";
 
 export async function userEventFormatter(message: string, context: InvocationContext): Promise<void> {
+    context.info(`DEBUG - Received Raw User Event Message:\n${message}`);
+
     const userEventsProducerClient = new AzureEventHubClient().getProducer('USER_EVENTS');
 
     try {
-        context.debug(`Received Raw User Event Message:\n${message}`);
-
         const userEvent: EventData = {
             body: formatUserEvent(message),
             contentType: 'application/json'
         };
 
-        context.debug(`Routing Formatted User Event Message...\n${JSON.stringify(userEvent, null, 2)}`);
+        context.info(`DEBUG - Routing Formatted User Event Message...\n${JSON.stringify(userEvent, null, 2)}`);
         await userEventsProducerClient.enqueueEvent(userEvent);
         context.info(`SUCCESS - Formatted User Event Message Forwarded\n${JSON.stringify(userEvent.body, null, 2)}`);
     } catch (error) {
@@ -43,7 +43,7 @@ function formatUserEvent(message: string): UserEvent {
             break;
     }
 
-    const customerIds = messageParts[7].substring(1, messageParts[7].length - 2).split(',')
+    const customerIds = messageParts[7].substring(1, messageParts[7].length - 1).split(',')
 
     const salesOrg = messageParts[10];
 
