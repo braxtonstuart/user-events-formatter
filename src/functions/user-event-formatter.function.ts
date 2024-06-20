@@ -4,6 +4,11 @@ import {UserEvent, UserEventType} from "@braxtonstuart/btncache-types";
 import {app, InvocationContext} from "@azure/functions";
 
 export async function userEventFormatter(message: string, context: InvocationContext): Promise<void> {
+    if(process.env.DISCARD_EVENTS === 'true') {
+        context.info(`SKIPPING - DISCARD_EVENTS Environment Variable = 'true'... Discarding User Event Message\n${message}`);
+        return;
+    }
+
     context.info(`DEBUG - Received Raw User Event Message:\n${message}`);
 
     const userEventsProducerClient = new AzureEventHubClient().getProducer('USER_EVENTS');
